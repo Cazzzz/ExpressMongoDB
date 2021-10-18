@@ -1,3 +1,5 @@
+import { ObjectId } from 'bson';
+
 let movies;
 let mflix;
 const DEFAULT_SORT = [["tomatoes.viewer.numReviews", -1]]
@@ -39,6 +41,44 @@ class MoviesDAO {
             return { moviesList: [], totalNumMovies: 0 }
         }
     }
+
+    static async getMovieByID(id) {
+        try {
+            const pipeline = [
+                {
+                    '$match': {'_id': new ObjectId(id)}
+                }, 
+                {
+                    '$lookup': {
+                        'from': 'comments', 
+                        'let': {'id': '$_id'}, 
+                        'pipeline': [
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$eq': [
+                                        '$movie_id', '$$id'
+                                        ]
+                                    }
+                                }
+                            }, 
+                            {
+                                '$sort': {'date': -1}
+                            }
+                        ], 
+                        'as': 'comments'
+                    }
+                }
+            ];
+    
+          return await movies.aggregate(pipeline).next();
+        }
+        catch (e) {
+            console.error(`Something went wrong in getMovieByID: ${e}`);
+            console.error(`e log: ${e.toString()}`);
+            return null;
+        }
+    }    
 };
 
 export default MoviesDAO;
