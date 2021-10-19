@@ -4,7 +4,7 @@ import MoviesController from '../controllers/movies.controller.js';
 
 const router = Router();
 
-router.get('/movies', MoviesController.apiGetMovies);
-router.get("/movies/:id", MoviesController.apiGetMovieById);
+router.get('/', MoviesController.apiGetMovies);
+router.get("/:id", MoviesController.apiGetMovieById);
 
 export default router;

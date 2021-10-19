@@ -19,6 +19,6 @@ try {
     });
 }
 catch(err) {
-    console.error(err.stack)
-    process.exit(1)
+    console.error(err.stack);
+    process.exit(1);
 }
