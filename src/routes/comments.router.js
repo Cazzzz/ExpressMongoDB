@@ -5,7 +5,7 @@ import CommentsController from "../controllers/comments.controller.js";
 const router = new Router()
 
 router.post("/", CommentsController.apiPostComment);
-router.post("/", CommentsController.apiUpdateComment);
-router.post("/", CommentsController.apiDeleteComment);
+router.put("/", CommentsController.apiUpdateComment);
+router.delete("/", CommentsController.apiDeleteComment);
 
 export default router;
