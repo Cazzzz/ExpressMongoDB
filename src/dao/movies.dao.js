@@ -79,6 +79,16 @@ class MoviesDAO {
             return null;
         }
     }    
+
+    static async addMovie(movieDoc) {
+        try {
+            return await movies.insertOne(movieDoc);
+        } 
+        catch (e) {
+            console.error(`Unable to post movie: ${e}`);
+            return { error: e };
+        }
+    }
 };
 
 export default MoviesDAO;

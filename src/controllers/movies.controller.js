@@ -1,4 +1,5 @@
-import MoviesDAO from "../dao/movies.dao.js"
+import MoviesDAO from "../dao/movies.dao.js";
+import { User } from "./users.controller.js";
 
 export default class MoviesController {
     static async apiGetMovies(req, res, next) {
@@ -28,6 +29,29 @@ export default class MoviesController {
         catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiPostMovie(req, res, next) {
+        try {
+            const userJwt = req.get("Authorization").slice("Bearer ".length);
+            const user = await User.decoded(userJwt);
+            var { error } = user;
+            if (error) {
+                res.status(401).json({ error });
+                return;
+            }
+
+            const movieDoc = req.body.movie;
+            const insertResponse = await MoviesDAO.addMovie(movieDoc);
+            const movieId = insertResponse.insertedId;
+
+            const updated = await MoviesDAO.getMovieByID(movieId);
+
+            res.json({ status: "success", movie: updated });
+        } 
+        catch (e) {
+            res.status(500).json({ e });
         }
     }
 }
