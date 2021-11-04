@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { MongoClient } from "mongodb";
 
 import app from "./server.js";
-import CustomersDAO from "./dao/customers.dao.js";
+import AccountsDAO from "./dao/accounts.dao.js";
 import UsersDAO from "./dao/users.dao.js";
 import TransactionsDAO from "./dao/transactions.dao.js";
 
@@ -14,7 +14,7 @@ const client = new MongoClient(dbUri);
 
 try {
     await client.connect();
-    await CustomersDAO.injectDB(client);
+    await AccountsDAO.injectDB(client);
     await UsersDAO.injectDB(client);
     await TransactionsDAO.injectDB(client);
 

@@ -2,7 +2,7 @@ import { ObjectId } from "bson";
 
 import UsersDAO from "../dao/users.dao.js";
 import TransactionsDAO from "../dao/transactions.dao.js";
-import CustomersDAO from "../dao/customers.dao.js";
+import AccountsDAO from "../dao/accounts.dao.js";
 import { User } from "./users.controller.js";
 
 export default class TransactionsController {
@@ -47,18 +47,18 @@ export default class TransactionsController {
                 return;
             }
 
-            const customerId = req.body.customer_id;
+            const accountId = req.body.account_id;
             const transaction = req.body.transaction;
             const date = new Date();
 
             const transactionResponse = await TransactionsDAO.addTransaction(
-                ObjectId(customerId),
+                ObjectId(accountId),
                 user,
                 transaction,
                 date,
             );
 
-            const updatedTransactions = await CustomersDAO.getCustomerByID(customerId);
+            const updatedTransactions = await AccountsDAO.getAccountByID(accountId);
 
             res.json({ status: "success", transactions: updatedTransactions.transactions });
         } catch (e) {
@@ -98,8 +98,8 @@ export default class TransactionsController {
                 );
             }
 
-            const customerId = req.body.customer_id;
-            const updatedTransactions = await CustomersDAO.getCustomerByID(customerId);
+            const accountId = req.body.account_id;
+            const updatedTransactions = await AccountsDAO.getAccountByID(accountId);
 
             res.json({ transactions: updatedTransactions.transactions });
         } 
@@ -125,9 +125,9 @@ export default class TransactionsController {
                 userEmail,
             );
 
-            const customerId = req.body.customer_id;
+            const accountId = req.body.account_id;
 
-            const { transactions } = await CustomersDAO.getCustomerByID(customerId);
+            const { transactions } = await AccountsDAO.getAccountByID(accountId);
             res.json({ transactions });
         } 
         catch (e) {

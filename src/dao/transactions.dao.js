@@ -49,7 +49,7 @@ export default class TransactionsDAO {
                 }, 
                 {
                     '$lookup': {
-                        'from': 'customers', 
+                        'from': 'accounts', 
                         'let': {'id': '$_id'}, 
                         'pipeline': [
                             {
@@ -65,7 +65,7 @@ export default class TransactionsDAO {
                                 '$sort': {'date': -1}
                             }
                         ], 
-                        'as': 'customers'
+                        'as': 'account'
                     }
                 }
             ];
@@ -80,12 +80,12 @@ export default class TransactionsDAO {
     }    
 
 
-    static async addTransaction(customerId, user, transaction, date) {
+    static async addTransaction(accountId, user, transaction, date) {
         try {
             const transactionDoc = {
                 name: user.name,
                 email: user.email,
-                customer_id: ObjectId(customerId),
+                account_id: ObjectId(accountId),
                 text: transaction,
                 date: date
             };
