@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 
 import usersRouter from './routes/users.router.js';
-import moviesRouter from './routes/movies.router.js';
-import commentsRouter from './routes/comments.router.js';
+import customersRouter from './routes/customers.router.js';
+import transactionsRouter from './routes/transactions.router.js';
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use('/users', usersRouter);
-app.use('/movies', moviesRouter);
-app.use('/comments', commentsRouter);
+app.use('/customers', customersRouter);
+app.use('/transactions', transactionsRouter);
 
 export default app;

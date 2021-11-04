@@ -1,48 +1,48 @@
 import { ObjectId } from 'bson';
 
-let movies;
+let customers;
 let mflix;
 const DEFAULT_SORT = [["tomatoes.viewer.numReviews", -1]]
 
-class MoviesDAO {
+class CustomersDAO {
     static async injectDB(conn) {
-        if (movies) {
+        if (customers) {
             return
         }
         try {
             mflix = await conn.db(process.env.DB_NAME);
-            movies = await mflix.collection("movies");
+            customers = await mflix.collection("customers");
         } 
         catch (e) {
-            console.error(`Unable to establish a collection handle in moviesDAO: ${e}`);
+            console.error(`Unable to establish a collection handle in customersDAO: ${e}`);
         }
     }
 
-    static async getMovies(query = {}, project = {}, sort = DEFAULT_SORT, page = 0, moviesPerPage = 20) {
+    static async getCustomers(query = {}, project = {}, sort = DEFAULT_SORT, page = 0, customersPerPage = 20) {
         let cursor;
         try {
-            cursor = await movies.find(query).project(project).sort(sort);
+            cursor = await customers.find(query).project(project).sort(sort);
         } 
         catch (e) {
             console.error(`Unable to issue find command, ${e}`)
-            return { moviesList: [], totalNumMovies: 0 }
+            return { customersList: [], totalNumCustomers: 0 }
         }
     
-        const displayCursor = cursor.skip(moviesPerPage*page).limit(moviesPerPage);
+        const displayCursor = cursor.skip(customersPerPage*page).limit(customersPerPage);
     
         try {
-            const moviesList = await displayCursor.toArray();
-            const totalNumMovies = (page === 0) ? await movies.countDocuments(query) : 0;
+            const customersList = await displayCursor.toArray();
+            const totalNumCustomers = (page === 0) ? await customers.countDocuments(query) : 0;
         
-            return { moviesList, totalNumMovies }
+            return { customersList, totalNumCustomers }
         } 
         catch (e) {
             console.error(`Unable to convert cursor to array or problem counting documents, ${e}`);
-            return { moviesList: [], totalNumMovies: 0 }
+            return { customersList: [], totalNumCustomers: 0 }
         }
     }
 
-    static async getMovieByID(id) {
+    static async getCustomerByID(id) {
         try {
             const pipeline = [
                 {
@@ -50,14 +50,14 @@ class MoviesDAO {
                 }, 
                 {
                     '$lookup': {
-                        'from': 'comments', 
-                        'let': {'id': '$_id'}, 
+                        'from': 'transactions', 
+                        'let': {'id': '$accounts'}, 
                         'pipeline': [
                             {
                                 '$match': {
                                     '$expr': {
                                         '$eq': [
-                                        '$movie_id', '$$id'
+                                        '$customer_id', '$$id'
                                         ]
                                     }
                                 }
@@ -66,29 +66,29 @@ class MoviesDAO {
                                 '$sort': {'date': -1}
                             }
                         ], 
-                        'as': 'comments'
+                        'as': 'transactions'
                     }
                 }
             ];
     
-          return await movies.aggregate(pipeline).next();
+          return await customers.aggregate(pipeline).next();
         }
         catch (e) {
-            console.error(`Something went wrong in getMovieByID: ${e}`);
+            console.error(`Something went wrong in getCustomerByID: ${e}`);
             console.error(`e log: ${e.toString()}`);
             return null;
         }
     }    
 
-    static async addMovie(movieDoc) {
+    static async addCustomer(customerDoc) {
         try {
-            return await movies.insertOne(movieDoc);
+            return await customers.insertOne(customerDoc);
         } 
         catch (e) {
-            console.error(`Unable to post movie: ${e}`);
+            console.error(`Unable to post customer: ${e}`);
             return { error: e };
         }
     }
 };
 
-export default MoviesDAO;
+export default CustomersDAO;
